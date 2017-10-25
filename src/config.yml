@@ -1,0 +1,4 @@
+locked: false
+cooldown: 30
+bypassedPlayers: []
+prefix: "&6[ServerLock]&r"

@@ -1,0 +1,8 @@
+name: ServerLock
+main: ru.SemperAnte.ServerLock.Main.ServerLock
+version: 1.0
+commands:
+  ServerLock:
+    description: Plugin main command
+    aliases: [sl, SLock]
+    default: false
