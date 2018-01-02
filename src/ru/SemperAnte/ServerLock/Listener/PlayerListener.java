@@ -5,39 +5,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import ru.SemperAnte.ServerLock.Main.ServerLock;
-import ru.SemperAnte.ServerLock.Utils.ConfigUtils;
 
 public class PlayerListener implements Listener
 {
-	 ConfigUtils config;
-
-	 public PlayerListener(ServerLock plugin)
-	 {
-		  config = plugin.getConfigUtils();
-	 }
 
 	 @EventHandler
 	 public void onJoin(PlayerLoginEvent event)
 	 {
-		  if (ConfigUtils.Locked)
+		  if (ServerLock.getConfigUtils().getBoolean("locked"))
 		  {
-				if (!config.canBypass(event.getPlayer()))
+				if (!ServerLock.getConfigUtils().getStringList("bypassedPlayers").contains(event.getPlayer().getName().toLowerCase()))
 				{
-					 String msg = config.getFromLang("KickMessage");
+					 String msg = ServerLock.getLangUtils().castString("KickMessage");
 					 event.setKickMessage(msg);
 					 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, msg);
 					 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-					 Bukkit.broadcastMessage(config.prefix + String.format(config.getFromLang("denyEntry"), event.getPlayer().getName()));
+					 Bukkit.broadcastMessage(ServerLock.getPrefix() + ServerLock.getLangUtils().castString("denyEntry", event.getPlayer().getName()));
 				}
 				else
-				{
-					 Bukkit.broadcastMessage(config.prefix + String.format(config.getFromLang("allowEntry"), event.getPlayer().getName()));
-				}
+					 Bukkit.broadcastMessage(ServerLock.getPrefix() + ServerLock.getLangUtils().castString("allowEntry", event.getPlayer().getName()));
 		  }
 	 }
 
-	 public void reloadConfig(ConfigUtils config)
-	 {
-		  this.config = config;
-	 }
 }

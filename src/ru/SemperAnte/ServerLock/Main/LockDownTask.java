@@ -2,26 +2,21 @@ package ru.SemperAnte.ServerLock.Main;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import ru.SemperAnte.ServerLock.Utils.ConfigUtils;
+
+import java.util.List;
 
 public class LockDownTask implements Runnable
 {
-	 private ConfigUtils config;
-
-	 public LockDownTask(ConfigUtils config)
-	 {
-		  this.config = config;
-	 }
 
 	 @Override public void run()
 	 {
 		  synchronized (this)
 		  {
-				short lastSec = config.LockCooldown;
-				String prefix = config.prefix;
+				int lastSec = ServerLock.getConfigUtils().getInt("LockCooldown");
+				String prefix = ServerLock.getConfigUtils().getString("prefix");
 				while (lastSec > 0)
 				{
-					 Bukkit.broadcastMessage(prefix + String.format(config.getFromLang("cooldown"), lastSec));
+					 Bukkit.broadcastMessage(prefix + ServerLock.getLangUtils().castString("cooldown", lastSec));
 					 lastSec--;
 					 try
 					 {
@@ -32,12 +27,11 @@ public class LockDownTask implements Runnable
 						  e.printStackTrace();
 					 }
 				}
-				config.Locked = true;
-				config.set("locked", true);
-				config.save();
+				ServerLock.getConfigUtils().set("locked", true);
+				List<String> bypassed = ServerLock.getConfigUtils().getStringList("bypassedPlayers");
 				for (Player p : Bukkit.getServer().getOnlinePlayers())
-					 if (!config.canBypass(p))
-						  p.kickPlayer(prefix + config.getFromLang("KickMessage"));
+					 if (!bypassed.contains(p.getName().toLowerCase()))
+						  p.kickPlayer(prefix + ServerLock.getLangUtils().castString("KickMessage"));
 
 		  }
 	 }

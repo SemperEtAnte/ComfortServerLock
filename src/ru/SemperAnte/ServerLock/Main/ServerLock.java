@@ -3,71 +3,59 @@ package ru.SemperAnte.ServerLock.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.SemperAnte.ServerLock.Listener.CommandListener;
+import ru.SemperAnte.ServerLock.Commands.CommandListener;
+import ru.SemperAnte.ServerLock.Commands.ServerLockSender;
 import ru.SemperAnte.ServerLock.Listener.PlayerListener;
-import ru.SemperAnte.ServerLock.Utils.Config;
-import ru.SemperAnte.ServerLock.Utils.ConfigUtils;
+import ru.SemperAnte.plugins.API.Exceptions.SemperAPIException;
+import ru.SemperAnte.plugins.API.Interface.Classes.Sender;
+import ru.SemperAnte.plugins.API.MainAPI;
+import ru.SemperAnte.plugins.API.Utils.ConfigUtils;
+import ru.SemperAnte.plugins.API.Utils.LangUtils;
 
 public class ServerLock extends JavaPlugin
 {
-	 private Config ConfigClass = new Config(this, "config.yml");
-	 private Config LangClass = new Config(this, "lang.yml");
-	 private FileConfiguration lang = LangClass.getConfig();
-	 private FileConfiguration config = ConfigClass.getConfig();
-	 private ConfigUtils configUtils = new ConfigUtils(this);
-	 private PlayerListener PL = new PlayerListener(this);
+
+	 private static ConfigUtils CU;
+	 private static LangUtils LU;
 
 	 @Override
 	 public void onEnable()
 	 {
-		  Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
+		  if (!MainAPI.isMustEnable(this))
+				return;
+		  Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+		  CU = new ConfigUtils(this);
+		  LU = new LangUtils(this);
 	 }
 
 	 @Override
 	 public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	 {
-		  if (command.getName().equalsIgnoreCase("serverlock"))
-				return new CommandListener(this).onCommand(sender, args);
+		  try
+		  {
+				return new CommandListener(new ServerLockSender(sender), args).isDone();
+		  }
+		  catch (SemperAPIException e)
+		  {
+				sender.sendMessage("Command not executed. Ask server administrator to fix that.");
+				e.printStackTrace();
+		  }
 		  return false;
 	 }
 
-	 @Override
-	 public FileConfiguration getConfig()
+	 public static ConfigUtils getConfigUtils()
 	 {
-		  return config;
+		  return CU;
 	 }
 
-	 @Override
-	 public void reloadConfig()
+	 public static LangUtils getLangUtils()
 	 {
-		  ConfigClass.reloadCFG();
-		  config = ConfigClass.getConfig();
-		  configUtils.reloadConfig(config);
-		  PL.reloadConfig(configUtils);
+		  return LU;
 	 }
 
-	 public ConfigUtils getConfigUtils()
+	 public static String getPrefix()
 	 {
-		  return configUtils;
-	 }
-
-	 public FileConfiguration getLang()
-	 {
-		  return lang;
-	 }
-
-	 public void reloadLang()
-	 {
-		  LangClass.reloadCFG();
-		  lang = LangClass.getConfig();
-		  configUtils.reloadLang(lang);
-	 }
-
-	 public void saveConfig()
-	 {
-		  ConfigClass.saveConfig();
-		  reloadConfig();
+		  return CU.getString("prefix");
 	 }
 }
