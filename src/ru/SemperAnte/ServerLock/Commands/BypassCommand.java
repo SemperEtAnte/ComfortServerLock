@@ -21,27 +21,28 @@ public class BypassCommand extends CommandListener
 		  {
 				String prefix = ServerLock.getPrefix();
 				List<String> bypassed = ServerLock.getConfigUtils().getStringList("bypassedPlayers");
+				String playername = args[2];
 				switch (args[1].toLowerCase())
 				{
 					 case "add":
-						  if (bypassed.contains(args[2].toLowerCase()))
-								sender.sendPrefixedMessage(ServerLock.getLangUtils().castString("alreadyExists", args[2]));
+						  if (bypassed.contains(playername.toLowerCase()))
+								sender.sendPrefixedMessage(ServerLock.getLangUtils().castString("alreadyExists", playername));
 						  else
 						  {
-								bypassed.add(args[2].toLowerCase());
+								bypassed.add(playername.toLowerCase());
 								ServerLock.getConfigUtils().set("bypassedPlayers", bypassed);
-								Bukkit.broadcastMessage(prefix + ServerLock.getLangUtils().castString("add", sender.getName(), args[2]));
+								Bukkit.broadcastMessage(prefix + ServerLock.getLangUtils().castString("add", sender.getName(), playername));
 
 						  }
 						  return true;
 					 case "remove":
-						  if(!bypassed.contains(args[2].toLowerCase()))
-						  	 sender.sendPrefixedMessage(ServerLock.getLangUtils().castString("notExists", args[2]));
+						  if(!bypassed.contains(playername.toLowerCase()))
+						  	 sender.sendPrefixedMessage(ServerLock.getLangUtils().castString("notExists", playername));
 						  else
 						  {
-								bypassed.remove(args[2].toLowerCase());
+								bypassed.remove(playername.toLowerCase());
 								ServerLock.getConfigUtils().set("bypassedPlayers", bypassed);
-								Bukkit.broadcastMessage(prefix + ServerLock.getLangUtils().castString("remove", sender.getName(), args[2]));
+								Bukkit.broadcastMessage(prefix + ServerLock.getLangUtils().castString("remove", sender.getName(), playername));
 
 						  }
 					 default:
