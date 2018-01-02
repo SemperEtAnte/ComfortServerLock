@@ -1,6 +1,8 @@
 name: ServerLock
 main: ru.SemperAnte.ServerLock.Main.ServerLock
-version: 1.0
+version: 2.0
+author: SemperAnte
+depend: [SemperAnteAPI]
 commands:
   ServerLock:
     description: Plugin main command
